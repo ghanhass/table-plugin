@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+    <meta charset="UTF-8">
+    <title>JavaScript resizable table demo</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            background: #FFFFFF;
+        }
+        th {
+            /*background:rgba(255,255,255,1);*/
+            height:30px;
+        }
+        th,td{
+            width:100px;
+            border:1px solid #000000;
+            text-align:left;
+        }
+    </style>
+</head>
+<body>
+    <table id='mytable'>
+        <thead>
+            <tr>
+                <th>ala ala ala ala 1</th>
+                <th><div>ala ala ala ala 2</div></th>
+                <th><div>ala ala ala ala 3</div></th>
+                <th><div>ala ala ala ala 4</div></th>
+                <th><div>ala ala ala ala 5</div></th>
+                <th><div>ala ala ala ala 6</div></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>ala ala ala ala</td>
+                <td><div>ala ala ala ala</div></td>
+                <td><div>ala ala ala ala</div></td>
+                <td><div>ala ala ala ala</div></td>
+                <td><div>ala ala ala ala</div></td>
+                <td><div>ala ala ala ala</div></td>
+            </tr>
+            <tr>
+                <td><div>ala ala ala ala</div></td>
+                <td><div>ala ala ala ala</div></td>
+                <td><div>ala ala ala ala</div></td>
+                <td><div>ala ala ala ala</div></td>
+                <td><div>ala ala ala ala</div></td>
+                <td>:D</td>
+            </tr>
+            <tr>
+                <td><div>ala ala ala ala</div></td>
+                <td><div>ala ala ala ala</div></td>
+                <td><div>ala ala ala ala</div></td>
+                <td><div>ala ala ala ala</div></td>
+                <td><div>ala ala ala ala</div></td>
+                <td><div>ala ala ala ala</div></td>
+            </tr>
+            <tr>
+                <td><div>ala ala ala ala</div></td>
+                <td><div>ala ala ala ala</div></td>
+                <td><div>ala ala ala ala</div></td>
+                <td><div>ala ala ala ala</div></td>
+                <td><div>ala ala ala ala</div></td>
+                <td><div>ala ala ala ala</div></td>
+            </tr>
+            <tr>
+                <td><div>ala ala ala ala</div></td>
+                <td><div>ala ala ala ala</div></td>
+                <td><div>ala ala ala ala</div></td>
+                <td><div>ala ala ala ala</div></td>
+                <td><div>ala ala ala ala</div></td>
+                <td><div>ala ala ala ala</div></td>
+            </tr>
+            <tr>
+                <td><div>ala ala ala ala</div></td>
+                <td><div>ala ala ala ala</div></td>
+                <td><div>ala ala ala ala</div></td>
+                <td><div>ala ala ala ala</div></td>
+                <td><div>ala ala ala ala</div></td>
+                <td><div>ala ala ala ala</div></td>
+            </tr>
+        </tbody>
+    </table>
+    <script src="hassoontableplugin.js"></script>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function(){
+        tablePlugin("#mytable", {drag:true,resize:true});
+    });
+    </script>
+</body>
+</html>
