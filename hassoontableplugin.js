@@ -45,6 +45,12 @@ function tablePlugin(selector, config){
       }
       .customizable-table thead > tr > * > div.th-content-wrapper,
       .customizable-table tbody > tr > * > div.td-content-wrapper{
+          all: inherit;
+          border: none;
+          padding: 0;
+          margin: 0;
+          display: table-cell;
+          position: static;
           pointer-events:none !important;/**/
           overflow: hidden !important;/**/
           text-overflow: ellipsis !important;/**/
@@ -55,6 +61,7 @@ function tablePlugin(selector, config){
       }
       .customizable-table thead > tr > * > div.th-content-wrapper *,
       .customizable-table tbody > tr > * > div.td-content-wrapper *{
+          pointer-events:initial;
           overflow: hidden !important;/**/
           text-overflow: ellipsis; !important;/**/
           white-space: nowrap !important;/**/
@@ -63,7 +70,7 @@ function tablePlugin(selector, config){
     /////////
     /**START Drag event handlers**/
     function dragstartHandler(event){
-        console.log("dragstartHandler target = ",event.target);
+        //console.log("dragstartHandler target = ",event.target);
         dragstartTarget = event.target;
         if(dragstartTarget.classList.contains("has-resizer")){// event.target is a treated th element ?
             dragstartTh = dragstartTarget;
@@ -231,12 +238,12 @@ function tablePlugin(selector, config){
             }
 
             if( (newWidth >= 40) && (newWidthNextTh === undefined || newWidthNextTh >= 40) ){
-                console.log("currentScreenX = ", currentScreenX);
-                console.log("dragstartScreenX = ", dragstartScreenX);
-                console.log("newWidth = ", newWidth);
-                console.log("dragstartThInitWidth = ", dragstartThInitWidth);
+                //console.log("currentScreenX = ", currentScreenX);
+                //console.log("dragstartScreenX = ", dragstartScreenX);
+                //console.log("newWidth = ", newWidth);
+                //console.log("dragstartThInitWidth = ", dragstartThInitWidth);
                 
-                console.log("_________________");
+                //console.log("_________________");
                 dragstartThToResize.style.cssText +=  'width:'+(newWidth)+"px !important";
                 if(dragstartThToResize.firstElementChild){
                     dragstartThToResize.firstElementChild.style.cssText +=  'width:'+(newWidth)+"px !important";
@@ -252,7 +259,7 @@ function tablePlugin(selector, config){
                 }
 
                 if (newWidthNextTh >=40){
-                    console.log("newWidthNextTh = ", newWidthNextTh);
+                    //console.log("newWidthNextTh = ", newWidthNextTh);
                     dragstartThToResizeNextElement.style.cssText +=  'width:'+(newWidthNextTh)+"px !important";
                     if(dragstartThToResizeNextElement.firstElementChild){
                         dragstartThToResizeNextElement.firstElementChild.style.cssText +=  'width:'+(newWidthNextTh)+"px !important";
@@ -284,8 +291,8 @@ function tablePlugin(selector, config){
         event.preventDefault();
         var currentTh = event.target;
         var currentId = parseInt(currentTh.dataset.elementId);
-        console.log("currentTh = ", currentTh);
-        console.log("currentId = ", currentId);
+        //console.log("currentTh = ", currentTh);
+        //console.log("currentId = ", currentId);
         var dragstartId = parseInt(dragstartTh.dataset.elementId);
         if(currentTh.classList.contains("has-resizer")){// event.target is a treated th element ?
             if(dragstartId != currentId){
@@ -320,7 +327,7 @@ function tablePlugin(selector, config){
                 }
             }
             else{
-                console.log("NO drop here!");
+                //console.log("NO drop here!");
             }
             var markedCells = document.querySelectorAll('.th-highlight-right,.td-highlight-right,.th-highlight-left,.td-highlight-left');
             for(var index = 0; index < markedCells.length; index++){
@@ -334,7 +341,7 @@ function tablePlugin(selector, config){
         }
         }
         else{ //nothing? :p
-            console.log("HERE :D");
+            //console.log("HERE :D");
         }
         resizeMode = false;
     }
@@ -375,7 +382,7 @@ function tablePlugin(selector, config){
                 
                 thElement.appendChild(thContentWrapper);
             }
-            var tdElements = table.querySelectorAll("tbody > tr > *:nth-child("+index+")");
+            var tdElements = table.querySelectorAll("tbody > tr > *:nth-child("+(index + 1)+")");
             for(var index2 = 0; index2 < tdElements.length; index2++){
                 var tdElement = tdElements[index2];
                 var tdContentWrapper = tdElement.querySelector("div.td-content-wrapper");
