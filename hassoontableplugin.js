@@ -25,13 +25,35 @@ function tablePlugin(selector, config){
           position:relative !important;/**/
       }
       thead .has-resizer div.column-resizer{
-          position: absolute !important;/**/
-          right: 0 !important;/**/
-          top: 0 !important;/**/
-          width: 5px;height: 100% !important;/**/
-          cursor: ew-resize !important;/**/
-          background: repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(0, 0, 0, 0.15) 2px, rgba(0, 0, 0, 0.15) 4px) !important;/**/
-          border-left: 1px solid rgba(0, 0, 0, 0.05) !important;/**/
+        position: absolute !important;
+        right: -4px !important;
+        top: 0 !important;
+        width: 1px;
+        height: 100% !important;
+        cursor: col-resize !important;
+        border-left: 1px solid rgba(0, 0, 0, 0.05) !important;
+        background: transparent;
+        border: none !important;
+        justify-content: center;
+        z-index: 999;
+        padding: 0 3px;
+      }
+      thead .has-resizer div.column-resizer::before{
+        content: ' ';
+        display:block;
+        border-right: 5px solid transparent;
+        border-top: 8px solid #000000;
+        border-bottom: 0px solid transparent;
+        border-left: 5px solid transparent;
+        width: 1px;
+        height: 0px;
+        position: absolute;
+        left: -2px;
+        top: -9px;
+        visibility:hidden;
+      }
+      thead .has-resizer div.column-resizer:hover::before{
+        visibility:visible;
       }
       .customizable-table-drag-img{
           position:fixed !important;
@@ -39,9 +61,9 @@ function tablePlugin(selector, config){
       }
       .customizable-table thead > tr > *,
       .customizable-table tbody > tr > *{
-          overflow: hidden !important;/**/
-          text-overflow: ellipsis !important;/**/
-          white-space:nowrap !important;/**/
+          /*overflow: hidden !important;*/
+          /*text-overflow: ellipsis !important;*/
+          /*white-space:nowrap !important;*/
       }
       .customizable-table thead > tr > * > div.th-content-wrapper,
       .customizable-table tbody > tr > * > div.td-content-wrapper{
@@ -107,6 +129,7 @@ function tablePlugin(selector, config){
             event.dataTransfer.setData("text/plain", event.target.dataset.elementId);
             event.dataTransfer.setDragImage(imgTable,-5,-5);
             /**END generate drag image**/
+            resizeMode = false;
         }
         else if(dragstartTarget.classList.contains("column-resizer")){
             event.stopPropagation();
@@ -234,7 +257,7 @@ function tablePlugin(selector, config){
                 newWidthNextTh = (dragstartThNextElementInitWidth - xDiff);
             }
 
-            if( (newWidth >= 40) && (newWidthNextTh === undefined || newWidthNextTh >= 40) ){
+            if( (newWidth >= 40) /*&& (newWidthNextTh === undefined || newWidthNextTh >= 40)*/ ){
                 console.log("currentScreenX = ", currentScreenX);
                 console.log("dragstartScreenX = ", dragstartScreenX);
                 console.log("newWidth = ", newWidth);
@@ -255,7 +278,7 @@ function tablePlugin(selector, config){
                     }
                 }
 
-                if (newWidthNextTh >=40){
+                /*if (newWidthNextTh >=40){ //cancelled for a later update
                     console.log("newWidthNextTh = ", newWidthNextTh);
                     dragstartThToResizeNextElement.style.cssText +=  'width:'+(newWidthNextTh)+"px !important";
                     if(dragstartThToResizeNextElement.firstElementChild){
@@ -270,7 +293,7 @@ function tablePlugin(selector, config){
                             tdElement.firstElementChild.style.cssText +=  'width:'+(newWidthNextTh)+"px !important";
                         }
                     }
-                }
+                }*/
             }
         }
 
