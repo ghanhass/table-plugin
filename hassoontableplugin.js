@@ -251,7 +251,8 @@ function tablePlugin(selector, config){
         if(resizeMode){
             var currentScreenX = event.screenX;
             var xDiff = currentScreenX - dragstartScreenX;
-            var newWidth = dragstartThInitWidth + xDiff;
+            var newWidth = (dragstartThInitWidth-(parseInt(window.getComputedStyle(dragstartThToResize, null).paddingLeft) +
+            parseInt(window.getComputedStyle(dragstartThToResize, null).paddingRight))) + xDiff;
             var newWidthNextTh;
             if(dragstartThNextElementInitWidth){
                 newWidthNextTh = (dragstartThNextElementInitWidth - xDiff);
@@ -266,7 +267,8 @@ function tablePlugin(selector, config){
                 console.log("_________________");
                 dragstartThToResize.style.cssText +=  'width:'+(newWidth)+"px !important";
                 if(dragstartThToResize.firstElementChild){
-                    dragstartThToResize.firstElementChild.style.cssText +=  'width:'+(newWidth)+"px !important";
+                    dragstartThToResize.firstElementChild.style.cssText +=  'width:'+(newWidth - (parseInt(window.getComputedStyle(dragstartThToResize, null).paddingLeft) +
+                    parseInt(window.getComputedStyle(dragstartThToResize, null).paddingRight)))+"px !important";
                 }
                 var cellIndex = dragstartThToResize.dataset.elementId;
                 var tdElements = table.querySelectorAll("tbody > tr > *:nth-child("+cellIndex+")");
