@@ -420,7 +420,7 @@ function tablePlugin(selector, config){
                     columnResizer.className = 'column-resizer';
                     columnResizer.setAttribute("draggable", "true");
                     if(!config || config.resize){
-                    x.appendChild(columnResizer);
+                        thElement.appendChild(columnResizer);
                     }
                     thElement.classList.add('has-resizer');
                 }
