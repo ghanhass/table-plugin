@@ -13,18 +13,19 @@ function tablePlugin(selector, config){
           styleEl.id='table-plugin-stylesheet'; 
           document.head.appendChild(styleEl);
       }
-      styleEl.innerHTML = `.th-highlight-left,
-      .td-highlight-left{
+      styleEl.innerHTML = `
+      .customizable-table .th-highlight-left,
+      .customizable-table .td-highlight-left{
           border-left:10px solid #fffa90 !important;/**/
       }
-      .th-highlight-right,
-      .td-highlight-right{
+      .customizable-table .th-highlight-right,
+      .customizable-table .td-highlight-right{
           border-right:10px solid #fffa90 !important;/**/
       }
-      thead .has-resizer{
+      .customizable-table thead .has-resizer{
           position:relative !important;/**/
       }
-      thead .has-resizer div.column-resizer{
+      .customizable-table thead .has-resizer div.column-resizer{
         position: absolute !important;
         right: -4px !important;
         top: 0 !important;
@@ -38,7 +39,7 @@ function tablePlugin(selector, config){
         z-index: 999;
         padding: 0 3px;
       }
-      thead .has-resizer div.column-resizer::before{
+      .customizable-table thead .has-resizer div.column-resizer::before{
         content: ' ';
         display:block;
         border-right: 5px solid transparent;
@@ -52,7 +53,7 @@ function tablePlugin(selector, config){
         top: -9px;
         visibility:hidden;
       }
-      thead .has-resizer div.column-resizer:hover::before{
+      .customizable-table thead .has-resizer div.column-resizer:hover::before{
         visibility:visible;
       }
       .customizable-table-drag-img{
@@ -368,7 +369,7 @@ function tablePlugin(selector, config){
         resizeMode = false;
     }
     /**END Drag event handlers**/
-
+    
     addStylesheetRules();
     var table;
     var dragstartTh;
@@ -378,76 +379,74 @@ function tablePlugin(selector, config){
     var dragstartThInitWidth;
     var dragstartThNextElementInitWidth;
     var resizeMode = false;
-    table = document.querySelector(selector);
-    if (table){
-        table.classList.add('customizable-table');
-        var thElements = table.querySelectorAll('thead > tr > *');
-        for(var index = 0; index < thElements.length; index++){
-            var thElement = thElements[index];
-            var columnResizer = thElement.querySelector("div.column-resizer");
-            var thContentWrapper = thElement.querySelector("div.th-content-wrapper");
-            thElement.dataset.elementId = (index+1);
-            if(!config || config.drag){
-                thElement.setAttribute("draggable", "true");
-            }
+    try{
+        table = document.querySelector(selector);
+        if (table){
+            table.classList.add('customizable-table');
+            var thElements = table.querySelectorAll('thead > tr > *');
+            for(var index = 0; index < thElements.length; index++){
+                var thElement = thElements[index];
+                var columnResizer = thElement.querySelector("div.column-resizer");
+                var thContentWrapper = thElement.querySelector("div.th-content-wrapper");
+                thElement.dataset.elementId = (index+1);
+                if(!config || config.drag){
+                    thElement.setAttribute("draggable", "true");
+                }
 
-            if(!thContentWrapper){//column content wrapper not set? set it!
-                thContentWrapper = document.createElement("div");
-                thContentWrapper.className = 'th-content-wrapper';
-                while(thElement.childElementCount > 0){
-                    thContentWrapper.appendChild(thElement.firstElementChild);
-                }
-                if(thElement.innerHTML){
-                    thContentWrapper.insertAdjacentHTML("beforeend", thElement.innerHTML);
-                    thElement.innerHTML = '';
-                }
-                
-                thElement.appendChild(thContentWrapper);
-            }
-            var tdElements = table.querySelectorAll("tbody > tr > *:nth-child("+(index+1)+")");
-            for(var index2 = 0; index2 < tdElements.length; index2++){
-                var tdElement = tdElements[index2];
-                var tdContentWrapper = tdElement.querySelector("div.td-content-wrapper");
-                if(!tdContentWrapper){//column content wrapper not set? set it!
-                    tdContentWrapper = document.createElement("div");
-                    tdContentWrapper.className = 'td-content-wrapper';
-                    while(tdElement.childElementCount > 0){
-                        tdContentWrapper.appendChild(tdElement.firstElementChild);
+                if(!thContentWrapper){//column content wrapper not set? set it!
+                    thContentWrapper = document.createElement("div");
+                    thContentWrapper.className = 'th-content-wrapper';
+                    while(thElement.childNodes.length > 0){
+                        thContentWrapper.appendChild(thElement.firstChild);
                     }
-                    if(tdElement.innerHTML){
-                        tdContentWrapper.insertAdjacentHTML("beforeend", tdElement.innerHTML);
-                        tdElement.innerHTML = '';
+                    thElement.appendChild(thContentWrapper);
+                }
+                var tdElements = table.querySelectorAll("tbody > tr > *:nth-child("+(index+1)+")");
+                for(var index2 = 0; index2 < tdElements.length; index2++){
+                    var tdElement = tdElements[index2];
+                    var tdContentWrapper = tdElement.querySelector("div.td-content-wrapper");
+                    if(!tdContentWrapper){//column content wrapper not set? set it!
+                        tdContentWrapper = document.createElement("div");
+                        tdContentWrapper.className = 'td-content-wrapper';
+                        while(tdElement.childNodes.length > 0){
+                            tdContentWrapper.appendChild(tdElement.firstChild);
+                        }
+                        tdElement.appendChild(tdContentWrapper);
                     }
-                    
-                    tdElement.appendChild(tdContentWrapper);
                 }
-            }
-            
-            if(!columnResizer){//resizer not set? set it!
-                columnResizer = document.createElement("div");
-                columnResizer.className = 'column-resizer';
-                columnResizer.setAttribute("draggable", "true");
-                if(!config || config.resize){
-                thElement.appendChild(columnResizer);
-                }
-                thElement.classList.add('has-resizer');
-            }
-            
-            /*START Reset DragEvent listeners*/
-            thElement.removeEventListener("dragstart", dragstartHandler);
-            thElement.removeEventListener("dragenter", dragenterHandler);
-            thElement.removeEventListener("dragleave", dragleaveHandler);
-            thElement.removeEventListener("dragover", dragoverHandler);
-            thElement.removeEventListener("drop", dropHandler);
-            document.removeEventListener("dragover", dragoverHandler);
-            /*END Reset DragEvent listeners*/
 
-            thElement.addEventListener("dragstart", dragstartHandler);
-            thElement.addEventListener("dragenter", dragenterHandler);
-            thElement.addEventListener("dragleave", dragleaveHandler);
-            thElement.addEventListener("dragover", dragoverHandler);
-            thElement.addEventListener("drop", dropHandler);
-            document.addEventListener("dragover", dragoverHandler);
-        }   
+                if(!columnResizer){//resizer not set? set it!
+                    columnResizer = document.createElement("div");
+                    columnResizer.className = 'column-resizer';
+                    columnResizer.setAttribute("draggable", "true");
+                    if(!config || config.resize){
+                    x.appendChild(columnResizer);
+                    }
+                    thElement.classList.add('has-resizer');
+                }
+
+                /*START Reset DragEvent listeners*/
+                thElement.removeEventListener("dragstart", dragstartHandler);
+                thElement.removeEventListener("dragenter", dragenterHandler);
+                thElement.removeEventListener("dragleave", dragleaveHandler);
+                thElement.removeEventListener("dragover", dragoverHandler);
+                thElement.removeEventListener("drop", dropHandler);
+                document.removeEventListener("dragover", dragoverHandler);
+                /*END Reset DragEvent listeners*/
+
+                thElement.addEventListener("dragstart", dragstartHandler);
+                thElement.addEventListener("dragenter", dragenterHandler);
+                thElement.addEventListener("dragleave", dragleaveHandler);
+                thElement.addEventListener("dragover", dragoverHandler);
+                thElement.addEventListener("drop", dropHandler);
+                document.addEventListener("dragover", dragoverHandler);
+            }   
+        }
+        else{
+            console.error("Error: targetted table does not exist!");
+        }
+    }
+    catch(err){
+        console.error(err)
     }
 }
