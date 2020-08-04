@@ -53,7 +53,7 @@ function tablePlugin(selector, config){
         top: -9px;
         visibility:hidden;
       }
-      .customizable-table thead .has-resizer div.column-resizer:hover::before{
+      .customizable-table thead .has-resizer div.column-resizer.resize-mode::before{
         visibility:visible;
       }
       .customizable-table-drag-img{
@@ -91,7 +91,7 @@ function tablePlugin(selector, config){
     /**START Drag event handlers**/
     function dragstartHandler(event){
         console.log("dragstartHandler target = ",event.target);
-        dragstartTarget = event.target;
+        var dragstartTarget = event.target;
         if(dragstartTarget.classList.contains("has-resizer")){// event.target is a treated th element ?
             dragstartTh = dragstartTarget;
             /*Start Remove old drag image element*/
@@ -135,6 +135,7 @@ function tablePlugin(selector, config){
         else if(dragstartTarget.classList.contains("column-resizer")){
             event.stopPropagation();
             //console.log('drahstart screenX = ',event.screenX);
+            dragstartColumnResizer = dragstartTarget;
             dragstartThToResize = dragstartTarget.parentNode;
             dragstartThInitWidth = dragstartThToResize.offsetWidth;
 
@@ -250,6 +251,7 @@ function tablePlugin(selector, config){
         event.preventDefault();
         //console.log('dragover screenX = ',event.screenX);
         if(resizeMode){
+            dragstartColumnResizer.classList.add("resize-mode");
             var currentScreenX = event.screenX;
             var xDiff = currentScreenX - dragstartScreenX;
             var newWidth = (dragstartThInitWidth-(parseInt(window.getComputedStyle(dragstartThToResize, null).paddingLeft) +
@@ -305,63 +307,68 @@ function tablePlugin(selector, config){
         }
     }
     ////////
+    function dragendHandler(event){
+        console.log("dragend event: ", event);
+        var elements= table.querySelectorAll(".resize-mode");
+        for(el of elements){
+            el.classList.remove("resize-mode")
+        }
+    }
+    ////////
     function dropHandler(event){
         if(!resizeMode){
             if(!config || config.drag){
-
-            
-        //console.log('drop target = ', event.target);
-        event.preventDefault();
-        var currentTh = event.target;
-        var currentId = parseInt(currentTh.dataset.elementId);
-        console.log("currentTh = ", currentTh);
-        console.log("currentId = ", currentId);
-        var dragstartId = parseInt(dragstartTh.dataset.elementId);
-        if(currentTh.classList.contains("has-resizer")){// event.target is a treated th element ?
-            if(dragstartId != currentId){
-                
-                var tableTheadRow = table.querySelector("thead > tr");
-                var tableTbodyRows = table.querySelectorAll("tbody > tr");
-                if( dragstartId < currentId ){ //insert after
-                    //console.log("drop (After) here!");
-                    currentTh.parentNode.insertBefore(dragstartTh, currentTh.nextElementSibling);
-                    for(var index = 0; index < tableTbodyRows.length; index++){
-                        var tableTbodyRow = tableTbodyRows[index];
-                        var currentTd = tableTbodyRow.children[currentId - 1];
-                        var dragstartTd = tableTbodyRow.children[dragstartId - 1];
-                        currentTd.parentNode.insertBefore(dragstartTd, currentTd.nextElementSibling);
+                //console.log('drop target = ', event.target);
+                event.preventDefault();
+                var currentTh = event.target;
+                var currentId = parseInt(currentTh.dataset.elementId);
+                console.log("currentTh = ", currentTh);
+                console.log("currentId = ", currentId);
+                var dragstartId = parseInt(dragstartTh.dataset.elementId);
+                if(currentTh.classList.contains("has-resizer")){// event.target is a treated th element ?
+                    if(dragstartId != currentId){
+                        var tableTheadRow = table.querySelector("thead > tr");
+                        var tableTbodyRows = table.querySelectorAll("tbody > tr");
+                        if( dragstartId < currentId ){ //insert after
+                            //console.log("drop (After) here!");
+                            currentTh.parentNode.insertBefore(dragstartTh, currentTh.nextElementSibling);
+                            for(var index = 0; index < tableTbodyRows.length; index++){
+                                var tableTbodyRow = tableTbodyRows[index];
+                                var currentTd = tableTbodyRow.children[currentId - 1];
+                                var dragstartTd = tableTbodyRow.children[dragstartId - 1];
+                                currentTd.parentNode.insertBefore(dragstartTd, currentTd.nextElementSibling);
+                            }
+                        }
+                        else if(dragstartId > currentId){//insert before
+                            //console.log("drop (Before) here!");
+                            currentTh.parentNode.insertBefore(dragstartTh, currentTh);
+                            for(var index = 0; index < tableTbodyRows.length; index++){
+                                var tableTbodyRow = tableTbodyRows[index];
+                                var currentTd = tableTbodyRow.children[currentId - 1];
+                                var dragstartTd = tableTbodyRow.children[dragstartId - 1];
+                                currentTd.parentNode.insertBefore(dragstartTd, currentTd);
+                            }
+                        }
+                    
+                        var thElements = table.querySelectorAll('thead > tr > *');
+                        for(var index = 0; index < thElements.length; index++){
+                            var thElement = thElements[index];
+                            thElement.dataset.elementId = (index+1);
+                        }
                     }
-                }
-                else if(dragstartId > currentId){//insert before
-                    //console.log("drop (Before) here!");
-                    currentTh.parentNode.insertBefore(dragstartTh, currentTh);
-                    for(var index = 0; index < tableTbodyRows.length; index++){
-                        var tableTbodyRow = tableTbodyRows[index];
-                        var currentTd = tableTbodyRow.children[currentId - 1];
-                        var dragstartTd = tableTbodyRow.children[dragstartId - 1];
-                        currentTd.parentNode.insertBefore(dragstartTd, currentTd);
+                    else{
+                        console.log("NO drop here!");
                     }
-                }
-
-                var thElements = table.querySelectorAll('thead > tr > *');
-                for(var index = 0; index < thElements.length; index++){
-                    var thElement = thElements[index];
-                    thElement.dataset.elementId = (index+1);
-                }
+                    var markedCells = document.querySelectorAll('.th-highlight-right,.td-highlight-right,.th-highlight-left,.td-highlight-left');
+                    for(var index = 0; index < markedCells.length; index++){
+                        var markedCell = markedCells[index];
+                        markedCell.classList.remove("th-highlight-right");
+                        markedCell.classList.remove("td-highlight-right");
+                        markedCell.classList.remove("th-highlight-left");
+                        markedCell.classList.remove("td-highlight-left");
+                    }
+                }   
             }
-            else{
-                console.log("NO drop here!");
-            }
-            var markedCells = document.querySelectorAll('.th-highlight-right,.td-highlight-right,.th-highlight-left,.td-highlight-left');
-            for(var index = 0; index < markedCells.length; index++){
-                var markedCell = markedCells[index];
-                markedCell.classList.remove("th-highlight-right");
-                markedCell.classList.remove("td-highlight-right");
-                markedCell.classList.remove("th-highlight-left");
-                markedCell.classList.remove("td-highlight-left");
-            }
-        }   
-        }
         }
         else{ //nothing? :p
             console.log("HERE :D");
@@ -373,6 +380,7 @@ function tablePlugin(selector, config){
     addStylesheetRules();
     var table;
     var dragstartTh;
+    var dragstartColumnResizer;
     var dragstartThToResize;
     var dragstartThToResizeNextElement;
     var dragstartScreenX;
@@ -430,6 +438,7 @@ function tablePlugin(selector, config){
                 thElement.removeEventListener("dragenter", dragenterHandler);
                 thElement.removeEventListener("dragleave", dragleaveHandler);
                 thElement.removeEventListener("dragover", dragoverHandler);
+                thElement.removeEventListener("dragend", dragendHandler);
                 thElement.removeEventListener("drop", dropHandler);
                 document.removeEventListener("dragover", dragoverHandler);
                 /*END Reset DragEvent listeners*/
@@ -438,6 +447,7 @@ function tablePlugin(selector, config){
                 thElement.addEventListener("dragenter", dragenterHandler);
                 thElement.addEventListener("dragleave", dragleaveHandler);
                 thElement.addEventListener("dragover", dragoverHandler);
+                thElement.addEventListener("dragend", dragendHandler);
                 thElement.addEventListener("drop", dropHandler);
                 document.addEventListener("dragover", dragoverHandler);
             }   
